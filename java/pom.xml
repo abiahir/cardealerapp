@@ -20,6 +20,10 @@
         <poi.version>5.2.5</poi.version>
         <picocli.version>4.7.5</picocli.version>
         <jackson.version>2.16.1</jackson.version>
+        <junit.version>5.10.1</junit.version>
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <maven.surefire.plugin.version>3.2.2</maven.surefire.plugin.version>
+        <maven.assembly.plugin.version>3.6.0</maven.assembly.plugin.version>
     </properties>
 
     <dependencies>
@@ -51,6 +55,14 @@
             <version>${picocli.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- JUnit 5 for testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -58,10 +70,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+                    <encoding>UTF-8</encoding>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>info.picocli</groupId>
@@ -74,8 +90,17 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
+                <configuration>
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>${maven.assembly.plugin.version}</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -99,4 +124,3 @@
         </plugins>
     </build>
 </project>
-
