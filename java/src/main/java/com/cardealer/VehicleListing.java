@@ -96,34 +96,16 @@ public class VehicleListing {
         
         String gearboxStr = getString(data, "gearbox", GearboxType.AUTOMATIC.getDisplayName());
         vehicle.gearbox = GearboxType.fromStringOrDefault(gearboxStr, GearboxType.AUTOMATIC);
-        if (vehicle.gearbox == null) {
-            throw new IllegalArgumentException(
-                String.format("Invalid gearbox value: %s. Must be one of: %s", 
-                    gearboxStr, java.util.Arrays.toString(GearboxType.values()))
-            );
-        }
         
         vehicle.engineSize = getString(data, "engine_size", PresentationConstants.Defaults.ENGINE_SIZE);
         
         String fuelTypeStr = getString(data, "fuel_type", FuelType.DIESEL.getDisplayName());
         vehicle.fuelType = FuelType.fromStringOrDefault(fuelTypeStr, FuelType.DIESEL);
-        if (vehicle.fuelType == null) {
-            throw new IllegalArgumentException(
-                String.format("Invalid fuel type value: %s. Must be one of: %s", 
-                    fuelTypeStr, java.util.Arrays.toString(FuelType.values()))
-            );
-        }
         
         vehicle.mileage = getString(data, "mileage", PresentationConstants.Defaults.MILEAGE);
         
         String ulezStr = getString(data, "ulez", UlezStatus.UNKNOWN.getDisplayName());
         vehicle.ulez = UlezStatus.fromStringOrDefault(ulezStr, UlezStatus.UNKNOWN);
-        if (vehicle.ulez == null) {
-            throw new IllegalArgumentException(
-                String.format("Invalid ULEZ value: %s. Must be one of: %s", 
-                    ulezStr, java.util.Arrays.toString(UlezStatus.values()))
-            );
-        }
         
         vehicle.motExpiry = getString(data, "mot_expiry", PresentationConstants.Defaults.MOT_EXPIRY);
         vehicle.owners = getString(data, "owners", PresentationConstants.Defaults.OWNERS);
