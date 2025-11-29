@@ -1,0 +1,20 @@
+{
+  "title": "Land Rover Discovery Sport",
+  "price": "£12,000",
+  "registration": "KN16 ZVU",
+  "year": "2016 (16 reg)",
+  "gearbox": "Automatic",
+  "engine_size": "2.0 L",
+  "fuel_type": "Diesel",
+  "mileage": "71,980",
+  "ulez": "Yes",
+  "mot_expiry": "19 Nov 2026",
+  "owners": "2",
+  "specs": ["BT", "NAV", "DAB Radio", "Rear Camera", "PX"],
+  "dealer": {
+    "name": "M&N Cars",
+    "phone": "07446 877759",
+    "email": "sales@mandncars.co.uk",
+    "website": "www.mandncars.uk"
+  }
+}
