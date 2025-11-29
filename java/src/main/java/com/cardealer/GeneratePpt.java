@@ -6,22 +6,19 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**
  * Main CLI application for generating vehicle presentation PowerPoint files.
+ * Provides a modern command-line interface with autocomplete support.
  */
 @Command(name = "generate-ppt", 
          description = "Generate an editable vehicle PPTX from JSON or CLI arguments",
          mixinStandardHelpOptions = true,
          version = "1.0.0")
 public class GeneratePpt implements Callable<Integer> {
-
-    private static final Set<String> FUEL_TYPES = Set.of("Petrol", "Diesel", "Hybrid", "Electric");
-    private static final Set<String> GEARBOX_TYPES = Set.of("Automatic", "Manual");
-    private static final Set<String> ULEZ_CHOICES = Set.of("Yes", "No", "Unknown");
 
     @Option(names = "--input", description = "Path to vehicle JSON data file")
     private File inputFile;
@@ -81,20 +78,32 @@ public class GeneratePpt implements Callable<Integer> {
     private String dealerWebsite;
 
     // Completion candidates for CLI autocomplete
-    static class FuelTypeCandidates extends java.util.ArrayList<String> {
-        FuelTypeCandidates() { super(FUEL_TYPES); }
+    static class FuelTypeCandidates extends ArrayList<String> {
+        FuelTypeCandidates() {
+            for (FuelType type : FuelType.values()) {
+                add(type.getDisplayName());
+            }
+        }
     }
 
-    static class GearboxCandidates extends java.util.ArrayList<String> {
-        GearboxCandidates() { super(GEARBOX_TYPES); }
+    static class GearboxCandidates extends ArrayList<String> {
+        GearboxCandidates() {
+            for (GearboxType type : GearboxType.values()) {
+                add(type.getDisplayName());
+            }
+        }
     }
 
-    static class UlezCandidates extends java.util.ArrayList<String> {
-        UlezCandidates() { super(ULEZ_CHOICES); }
+    static class UlezCandidates extends ArrayList<String> {
+        UlezCandidates() {
+            for (UlezStatus status : UlezStatus.values()) {
+                add(status.getDisplayName());
+            }
+        }
     }
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call() {
         try {
             // Load vehicle from JSON if provided
             VehicleListing vehicle = loadVehicle(inputFile);
@@ -107,17 +116,37 @@ public class GeneratePpt implements Callable<Integer> {
             builder.buildPresentation(vehicle, outputFile.toPath());
             
             System.out.println("Saved editable PPTX to " + outputFile);
-            return 0;
+            return CommandLine.ExitCode.OK;
+        } catch (IllegalArgumentException e) {
+            System.err.println("Validation error: " + e.getMessage());
+            return CommandLine.ExitCode.USAGE;
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
-            return 1;
+            if (System.getProperty("debug") != null) {
+                e.printStackTrace();
+            }
+            return CommandLine.ExitCode.SOFTWARE;
         }
     }
 
+    /**
+     * Loads a vehicle listing from a JSON file.
+     * 
+     * @param inputFile the JSON file to load, or null for a default vehicle
+     * @return a VehicleListing instance
+     * @throws Exception if there's an error reading or parsing the file
+     */
     private VehicleListing loadVehicle(File inputFile) throws Exception {
         if (inputFile == null) {
             return new VehicleListing();
+        }
+        
+        if (!inputFile.exists()) {
+            throw new IllegalArgumentException("Input file does not exist: " + inputFile);
+        }
+        
+        if (!inputFile.canRead()) {
+            throw new IllegalArgumentException("Cannot read input file: " + inputFile);
         }
         
         ObjectMapper mapper = new ObjectMapper();
@@ -126,33 +155,46 @@ public class GeneratePpt implements Callable<Integer> {
         return VehicleListing.fromMap(data);
     }
 
+    /**
+     * Updates the vehicle listing with values from CLI arguments.
+     * 
+     * @param vehicle the vehicle listing to update
+     * @throws IllegalArgumentException if any enum values are invalid
+     */
     private void updateFromArgs(VehicleListing vehicle) {
-        if (title != null) vehicle.setTitle(title);
-        if (price != null) vehicle.setPrice(price);
-        if (registration != null) vehicle.setRegistration(registration);
-        if (year != null) vehicle.setYear(year);
+        if (title != null) {
+            vehicle.setTitle(title);
+        }
+        if (price != null) {
+            vehicle.setPrice(price);
+        }
+        if (registration != null) {
+            vehicle.setRegistration(registration);
+        }
+        if (year != null) {
+            vehicle.setYear(year);
+        }
         if (gearbox != null) {
-            if (!GEARBOX_TYPES.contains(gearbox)) {
-                throw new IllegalArgumentException("Gearbox must be one of: " + GEARBOX_TYPES);
-            }
-            vehicle.setGearbox(gearbox);
+            vehicle.setGearbox(gearbox); // This will validate and throw if invalid
         }
-        if (engineSize != null) vehicle.setEngineSize(engineSize);
+        if (engineSize != null) {
+            vehicle.setEngineSize(engineSize);
+        }
         if (fuelType != null) {
-            if (!FUEL_TYPES.contains(fuelType)) {
-                throw new IllegalArgumentException("Fuel type must be one of: " + FUEL_TYPES);
-            }
-            vehicle.setFuelType(fuelType);
+            vehicle.setFuelType(fuelType); // This will validate and throw if invalid
         }
-        if (mileage != null) vehicle.setMileage(mileage);
+        if (mileage != null) {
+            vehicle.setMileage(mileage);
+        }
         if (ulez != null) {
-            if (!ULEZ_CHOICES.contains(ulez)) {
-                throw new IllegalArgumentException("ULEZ must be one of: " + ULEZ_CHOICES);
-            }
-            vehicle.setUlez(ulez);
+            vehicle.setUlez(ulez); // This will validate and throw if invalid
         }
-        if (motExpiry != null) vehicle.setMotExpiry(motExpiry);
-        if (owners != null) vehicle.setOwners(owners);
+        if (motExpiry != null) {
+            vehicle.setMotExpiry(motExpiry);
+        }
+        if (owners != null) {
+            vehicle.setOwners(owners);
+        }
         if (specs != null && !specs.isEmpty()) {
             vehicle.setSpecs(specs);
         }
@@ -172,4 +214,3 @@ public class GeneratePpt implements Callable<Integer> {
         System.exit(exitCode);
     }
 }
-
