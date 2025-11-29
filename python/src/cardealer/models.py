@@ -52,22 +52,33 @@ class VehicleListing:
     @staticmethod
     def from_dict(data: Dict[str, object]) -> "VehicleListing":
         """Create VehicleListing from a dictionary."""
-        def _choice(value: str, allowed: List[str], label: str) -> str:
-            if value not in allowed:
-                choices = ", ".join(allowed)
-                raise ValueError(f"{label} must be one of: {choices}")
-            return value
+
+        def _choice(value: Optional[object], allowed: List[str], label: str, default: str) -> str:
+            """Return a normalized string from the allowed choices."""
+            if value is None:
+                return default
+
+            normalized = str(value).strip()
+            if not normalized:
+                return default
+
+            for option in allowed:
+                if normalized.lower() == option.lower():
+                    return option
+
+            choices = ", ".join(allowed)
+            raise ValueError(f"{label} must be one of: {choices}")
 
         return VehicleListing(
             title=str(data.get("title", "Vehicle Title")),
             price=str(data.get("price", "Price on enquiry")),
             registration=str(data.get("registration", "Registration")),
             year=str(data.get("year", "Year")),
-            gearbox=_choice(str(data.get("gearbox", "Automatic")), GEARBOX_TYPES, "Gearbox"),
+            gearbox=_choice(data.get("gearbox"), GEARBOX_TYPES, "Gearbox", "Automatic"),
             engine_size=str(data.get("engine_size", "2.0 L")),
-            fuel_type=_choice(str(data.get("fuel_type", "Diesel")), FUEL_TYPES, "Fuel type"),
+            fuel_type=_choice(data.get("fuel_type"), FUEL_TYPES, "Fuel type", "Diesel"),
             mileage=str(data.get("mileage", "0")),
-            ulez=_choice(str(data.get("ulez", "Unknown")), ULEZ_CHOICES, "ULEZ"),
+            ulez=_choice(data.get("ulez"), ULEZ_CHOICES, "ULEZ", "Unknown"),
             mot_expiry=str(data.get("mot_expiry", "Unknown")),
             owners=str(data.get("owners", "Unknown")),
             specs=[str(item) for item in data.get("specs", [])],
