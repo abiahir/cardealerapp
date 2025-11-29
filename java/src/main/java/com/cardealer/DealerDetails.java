@@ -70,10 +70,10 @@ public record DealerDetails(
         }
         
         return new DealerDetails(
-            name.isEmpty() ? DEFAULT.name : name,
-            phone.isEmpty() ? DEFAULT.phone : phone,
-            email.isEmpty() ? DEFAULT.email : email,
-            website.isEmpty() ? DEFAULT.website : website
+            name.isBlank() ? DEFAULT.name : name,
+            phone.isBlank() ? DEFAULT.phone : phone,
+            email.isBlank() ? DEFAULT.email : email,
+            website.isBlank() ? DEFAULT.website : website
         );
     }
 
