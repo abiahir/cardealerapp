@@ -1,68 +1,238 @@
 # Car Dealer Presentation Generator
 
-This repo contains a simple CLI tool for building editable PowerPoint files that
-summarise vehicle listings from sources like AutoTrader. Data can come from a
-JSON payload or be supplied inline through command-line flags with controlled
-options for fields such as fuel type and gearbox.
+A professional tool for generating editable PowerPoint presentations from vehicle listing data. Available in both **Python** and **Java** implementations.
 
-## Requirements
+## 📋 Table of Contents
+
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Python Version](#python-version)
+- [Java Version](#java-version)
+- [Usage Examples](#usage-examples)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+
+## ✨ Features
+
+- 🎨 **Professional Layout**: Matches showroom presentation standards
+- ✏️ **Fully Editable**: All text remains editable in PowerPoint/Google Slides
+- 📊 **Structured Data**: Input from JSON files or CLI arguments
+- 🔒 **Type Safety**: Validated categorical fields (fuel type, gearbox, ULEZ)
+- 🚀 **Dual Implementation**: Choose Python for rapid development or Java for enterprise use
+- 📦 **Well Structured**: Follows best practices for both languages
+
+## 📁 Project Structure
+
+```
+cardealerapp/
+├── python/                    # Python implementation
+│   ├── src/
+│   │   └── cardealer/         # Main package
+│   │       ├── __init__.py
+│   │       ├── cli.py         # Command-line interface
+│   │       ├── constants.py   # Configuration constants
+│   │       ├── models.py      # Data models
+│   │       └── presentation.py # PowerPoint generation
+│   ├── tests/                 # Unit tests
+│   ├── data/                  # Sample data files
+│   ├── requirements.txt       # Python dependencies
+│   ├── setup.py              # Package setup
+│   └── pyproject.toml         # Modern Python config
+│
+├── java/                      # Java implementation
+│   ├── src/
+│   │   ├── main/
+│   │   │   └── java/com/cardealer/
+│   │   │       ├── GeneratePpt.java
+│   │   │       ├── PresentationBuilder.java
+│   │   │       ├── VehicleListing.java
+│   │   │       └── DealerDetails.java
+│   │   └── test/              # Unit tests
+│   └── pom.xml               # Maven configuration
+│
+├── docs/                      # Documentation
+├── .gitignore
+└── README.md                 # This file
+```
+
+## 🐍 Python Version
+
+### Requirements
 
 - Python 3.10+
-- Dependencies listed in `requirements.txt`
+- Dependencies listed in `python/requirements.txt`
 
-Install them with:
+### Installation
 
 ```bash
+cd python
 pip install -r requirements.txt
+
+# Or install as a package
+pip install -e .
 ```
 
-## Usage
-
-1. Start with the provided `sample_vehicle.json` or export your own JSON with
-   fields that mirror the keys in that example.
-
-2. Generate a presentation using JSON only:
+### Usage
 
 ```bash
-python generate_ppt.py --input sample_vehicle.json --output listing.pptx
+# From the python directory
+python -m cardealer --input data/sample_vehicle.json --output listing.pptx
+
+# Or if installed
+generate-ppt --input data/sample_vehicle.json --output listing.pptx
 ```
 
-3. Override any field via CLI flags (helpful for drop-down style choices):
+See [python/README.md](python/README.md) for detailed Python documentation.
+
+## ☕ Java Version
+
+### Requirements
+
+- Java 17+
+- Maven 3.6+
+
+### Building
 
 ```bash
-python generate_ppt.py \
-  --input sample_vehicle.json \
+cd java
+mvn clean package
+```
+
+### Usage
+
+```bash
+# Using the executable JAR
+java -jar target/cardealerapp-1.0.0-jar-with-dependencies.jar \
+  --input ../python/data/sample_vehicle.json \
+  --output listing.pptx
+```
+
+See [java/README.md](java/README.md) for detailed Java documentation.
+
+## 📝 Usage Examples
+
+### Basic Usage (JSON Input)
+
+```bash
+# Python
+python -m cardealer --input data/sample_vehicle.json --output vehicle.pptx
+
+# Java
+java -jar target/cardealerapp-1.0.0-jar-with-dependencies.jar \
+  --input data/sample_vehicle.json --output vehicle.pptx
+```
+
+### Override Fields via CLI
+
+```bash
+# Python
+python -m cardealer \
+  --input data/sample_vehicle.json \
   --fuel-type Petrol \
   --gearbox Manual \
-  --engine-size "1.6 L" \
-  --owners "1" \
-  --specs "Bluetooth" "Parking Sensors" \
-  --output petrol-manual.pptx
+  --price "£15,000" \
+  --output custom.pptx
+
+# Java
+java -jar target/cardealerapp-1.0.0-jar-with-dependencies.jar \
+  --input data/sample_vehicle.json \
+  --fuel-type Petrol \
+  --gearbox Manual \
+  --price "£15,000" \
+  --output custom.pptx
 ```
 
-4. To build a slide without JSON, simply omit `--input` and supply details via
-   flags:
+### Create Without JSON (All CLI)
 
 ```bash
-python generate_ppt.py \
-  --title "Example Hatchback" \
-  --price "£8,995" \
-  --registration "AB12 CDE" \
-  --year "2020 (70 reg)" \
+# Python
+python -m cardealer \
+  --title "Ford Kuga ST-Line" \
+  --price "£18,500" \
+  --registration "AB21 XYZ" \
+  --year "2021 (21 reg)" \
   --fuel-type Hybrid \
   --gearbox Automatic \
   --engine-size "1.5 L" \
-  --mileage "12,345" \
+  --mileage "28,450" \
   --ulez Yes \
-  --mot-expiry "12 Dec 2025" \
-  --specs "Apple CarPlay" "Reverse Camera" \
-  --dealer-name "Example Cars" \
-  --dealer-phone "01234 567890" \
-  --dealer-email "sales@example.com" \
-  --output hatchback.pptx
+  --mot-expiry "15 Mar 2026" \
+  --owners "1" \
+  --specs "Apple CarPlay" "Android Auto" "Navigation" \
+  --dealer-name "M&N Cars" \
+  --dealer-phone "07446 877759" \
+  --dealer-email "sales@mandncars.co.uk" \
+  --dealer-website "www.mandncars.uk" \
+  --output kuga.pptx
 ```
 
-All text in the resulting PPTX remains editable in PowerPoint or Google Slides,
-so you can make manual tweaks after generation. The categorical flags
-(`--fuel-type`, `--gearbox`, `--ulez`) enforce the same choices you would expect
-from dropdowns when filling out the data by hand.
+## 🛠️ Development
+
+### Python Development
+
+```bash
+cd python
+
+# Install in development mode
+pip install -e .
+
+# Run tests
+pytest tests/
+
+# Format code
+black src/
+
+# Lint code
+pylint src/
+```
+
+### Java Development
+
+```bash
+cd java
+
+# Compile
+mvn compile
+
+# Run tests
+mvn test
+
+# Build JAR
+mvn package
+```
+
+## 📊 Comparison
+
+| Feature | Python | Java |
+|---------|--------|------|
+| **Code Size** | ~400 lines | ~500 lines |
+| **Type Safety** | Runtime | Compile-time |
+| **Performance** | Good | Excellent |
+| **Development Speed** | Faster | Moderate |
+| **Enterprise Ready** | Good | Excellent |
+| **Learning Curve** | Easier | Steeper |
+
+Both versions produce **identical PowerPoint outputs**. Choose based on your needs:
+- **Python**: Faster development, simpler code, great for scripting
+- **Java**: Better for enterprise apps, type safety, team development
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+## 📄 License
+
+MIT License - see LICENSE file for details
+
+## 🙏 Acknowledgments
+
+- Built with [python-pptx](https://github.com/scanny/python-pptx) (Python)
+- Built with [Apache POI](https://poi.apache.org/) (Java)
+- CLI powered by [Picocli](https://picocli.info/) (Java)

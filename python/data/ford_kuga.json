@@ -1,0 +1,21 @@
+{
+  "title": "Ford Kuga ST-Line",
+  "price": "£18,500",
+  "registration": "AB21 XYZ",
+  "year": "2021 (21 reg)",
+  "gearbox": "Automatic",
+  "engine_size": "1.5 L",
+  "fuel_type": "Hybrid",
+  "mileage": "28,450",
+  "ulez": "Yes",
+  "mot_expiry": "15 Mar 2026",
+  "owners": "1",
+  "specs": ["Apple CarPlay", "Android Auto", "Navigation", "Parking Sensors", "Rear Camera", "Cruise Control", "Heated Seats"],
+  "dealer": {
+    "name": "M&N Cars",
+    "phone": "07446 877759",
+    "email": "sales@mandncars.co.uk",
+    "website": "www.mandncars.uk"
+  }
+}
+
