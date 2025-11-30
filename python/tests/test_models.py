@@ -66,3 +66,16 @@ def test_vehicle_listing_invalid_gearbox():
     with pytest.raises(ValueError, match="Gearbox must be one of"):
         VehicleListing.from_dict(data)
 
+
+def test_vehicle_listing_allows_case_insensitive_enums():
+    """VehicleListing should accept lowercase enum values from JSON."""
+    data = {
+        "gearbox": "manual",
+        "fuel_type": "hybrid",
+        "ulez": "yes",
+    }
+    vehicle = VehicleListing.from_dict(data)
+    assert vehicle.gearbox == "Manual"
+    assert vehicle.fuel_type == "Hybrid"
+    assert vehicle.ulez == "Yes"
+
